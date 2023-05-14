@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 namespace In2code\Invisiblerecaptcha\Domain\Validator\SpamShield;
 
@@ -22,7 +23,6 @@ class RecaptchaMethod extends AbstractMethod
     /**
      * Check if secret key is given and set it
      *
-     * @return void
      * @throws \Exception
      */
     public function initialize(): void
