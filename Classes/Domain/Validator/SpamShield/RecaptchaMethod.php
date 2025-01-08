@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace In2code\Invisiblerecaptcha\Domain\Validator\SpamShield;
 
 use In2code\Powermail\Domain\Model\Field;
