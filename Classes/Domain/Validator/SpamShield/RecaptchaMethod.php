@@ -93,7 +93,7 @@ class RecaptchaMethod extends AbstractMethod
      */
     protected function getCaptchaResponse(): string
     {
-        $response = GeneralUtility::_GP('g-recaptcha-response');
+        $response = $GLOBALS['TYPO3_REQUEST']->getParsedBody()['g-recaptcha-response'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['g-recaptcha-response'] ?? null;
         if (!empty($response)) {
             return $response;
         }
