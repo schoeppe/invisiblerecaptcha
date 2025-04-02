@@ -8,18 +8,15 @@ use In2code\Powermail\Domain\Model\Field;
 use In2code\Powermail\Domain\Validator\SpamShield\AbstractMethod;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\Exception;
 
 /**
  * Class RecaptchaMethod
  */
 class RecaptchaMethod extends AbstractMethod
 {
-    /**
-     * @var string
-     */
-    protected $secretKey = '';
+    protected string $secretKey = '';
 
     /**
      * Check if secret key is given and set it
@@ -41,9 +38,9 @@ class RecaptchaMethod extends AbstractMethod
 
     /**
      * @return bool true if spam recognized
-     * @throws Exception
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
+     * @throws \JsonException
      */
     public function spamCheck(): bool
     {
@@ -52,7 +49,7 @@ class RecaptchaMethod extends AbstractMethod
         }
         if ($this->getCaptchaResponse() !== '') {
             $jsonResult = GeneralUtility::getUrl($this->getSiteVerifyUri());
-            $result = json_decode($jsonResult);
+            $result = json_decode($jsonResult, false, 512, JSON_THROW_ON_ERROR);
             return !$result->success;
         }
         return true;
@@ -64,10 +61,12 @@ class RecaptchaMethod extends AbstractMethod
      * @return bool
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws ExtensionConfigurationPathDoesNotExistException
-     * @throws Exception
      */
     protected function isFormWithRecaptchaField(): bool
     {
+        if (!$this->mail->getForm()) {
+            return false;
+        }
         foreach ($this->mail->getForm()->getPages() as $page) {
             /** @var Field $field */
             foreach ($page->getFields() as $field) {
@@ -121,7 +120,8 @@ class RecaptchaMethod extends AbstractMethod
      */
     protected function getActionName(): string
     {
-        $pluginVariables = GeneralUtility::_GPmerged('tx_powermail_pi1');
+        $pluginVariables = $GLOBALS['TYPO3_REQUEST']->getQueryParams()['tx_powermail_pi1'];
+        ArrayUtility::mergeRecursiveWithOverrule($pluginVariables, $GLOBALS['TYPO3_REQUEST']->getParsedBody()['tx_powermail_pi1']);
         return $pluginVariables['action'];
     }
 }
