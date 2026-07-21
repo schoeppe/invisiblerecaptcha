@@ -2,9 +2,9 @@
     <div class="{settings.styles.framework.fieldWrappingClasses} {settings.styles.framework.offsetClasses}">
         <f:if condition="{settings.invisiblerecaptcha.sitekey} != 'abcdef'">
             <f:then>
+                <input type="hidden" name="g-recaptcha-response" value="" />
                 <button
                         type="submit"
-                        name="g-recaptcha-response"
                         class="powermail_submit btn btn-primary g-recaptcha"
                         data-google-recaptcha-sitekey="{settings.invisiblerecaptcha.sitekey}">
                     {field.title}
